@@ -2,10 +2,7 @@ package org.ruben.password.bondary;
 
 import io.smallrye.jwt.build.Jwt;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.ruben.password.control.AppUser;
@@ -23,10 +20,10 @@ public class AuthResource {
     @POST
     @Path("/login")
     public Response login(AppUser appUser) {
-        if (!authService.authenticate(appUser.user_name, appUser.password)) {
+        if (!authService.canAuthenticate(appUser.user_name, appUser.password)) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         } else {
-            String token = Jwt.issuer("example.com")
+            String token = Jwt.issuer("password-manager")
                     .upn(appUser.user_name)
                     .groups("User")
                     .sign();
