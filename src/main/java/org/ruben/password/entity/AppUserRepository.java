@@ -1,8 +1,8 @@
-package org.ruben.password.repository;
+package org.ruben.password.entity;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
-import org.ruben.password.entities.AppUser;
+import org.ruben.password.control.AppUser;
 
 @ApplicationScoped
 public class AppUserRepository implements PanacheRepository<AppUser> {

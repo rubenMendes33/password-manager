@@ -1,4 +1,4 @@
-package org.ruben.password.resource;
+package org.ruben.password.bondary;
 
 import io.smallrye.jwt.build.Jwt;
 import jakarta.inject.Inject;
@@ -8,12 +8,8 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import org.ruben.password.entities.AppUser;
-import org.ruben.password.repository.AppUserRepository;
-import org.ruben.password.service.AuthService;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.ruben.password.control.AppUser;
+import org.ruben.password.control.AuthService;
 
 
 @Path("/auth")
@@ -27,14 +23,21 @@ public class AuthResource {
     @POST
     @Path("/login")
     public Response login(AppUser appUser) {
-        AppUser foundUser = authService.authenticate(appUser.user_name);
-        if (foundUser != null && foundUser.password.equals(appUser.password)) {
+        if (!authService.authenticate(appUser.user_name, appUser.password)) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        } else {
             String token = Jwt.issuer("example.com")
-                    .upn(foundUser.user_name)
+                    .upn(appUser.user_name)
                     .groups("User")
                     .sign();
             return Response.ok().header("Authorization", "Bearer " + token).build();
         }
-        return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
+
+    @POST
+    @Path("/register")
+    public Response register(AppUser appUser) {
+        authService.registerUser(appUser);
+        return Response.ok().build();
     }
 }
